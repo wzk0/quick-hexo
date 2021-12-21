@@ -5,7 +5,7 @@
 ## 安装(获取)
 
 ```
-wget 
+wget https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py
 ```
 
 ## 使用
