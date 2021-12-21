@@ -11,8 +11,8 @@ print("由便当手打制作！")
 print("\n0) 更新node和npm  1) 安装Hexo所需的一切")
 print("2) 新建           3) 编辑")
 print("4) 预览           5) 上传(到Github)")
-print("6) 备份文章       8) 退出\n")
-
+print("6) 备份文章       7) 主题")
+print("8) 退出\n")
 type = input("请输入序号:")
 hh()
 
@@ -136,6 +136,32 @@ if type == "6":
     os.chdir("./source/_posts/")
     os.system(action)
     sys.exit(1)
+if type == "7":
+  gc = "git clone "
+  ayer = gc + "https://github.com/Shen-Yu/hexo-theme-ayer.git ./themes/ayer"
+  next = gc + "https://github.com/theme-next/hexo-theme-next ./themes/next"
+  matery = gc + "https://github.com/blinkfox/hexo-theme-matery.git"
+  apollo = gc + "https://github.com/pinggod/hexo-theme-apollo.git ./themes/apollo"
+  flex = gc + "https://github.com/miiiku/hexo-theme-flexblock.git ./themes/flex-block"
+  print("可快速安装的主流主题:")
+  print("0) ayer    1) next")
+  print("2) matery  3) apollo")
+  print("4) flex-block")
+  hh()
+  nz = input("请输入主题序号或自定义仓库https地址:")
+  if nz == "0":
+    os.system(ayer)
+  if nz == "1":
+    os.system(next)
+  if nz == "2":
+    os.system(matery)
+  if nz == "3":
+    os.system(apollo)
+  if nz == "4":
+    os.system(flex)
+  else:
+    action = gc + nz + ".git ./themes"
+    os.system(action)
 
 if type == "8":
   sys.exit(1)
