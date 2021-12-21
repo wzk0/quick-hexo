@@ -20,7 +20,7 @@ python hexo.py
 
 如图所示:
 
-[图](https://raw.githubusercontent.com/wzk0/photo/main/IMG_20211222_005506.jpg)
+![图](https://raw.githubusercontent.com/wzk0/photo/main/IMG_20211222_005506.jpg)
 
 ## PS
 
