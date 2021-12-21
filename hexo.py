@@ -13,6 +13,15 @@ print("6) 备份文章       8) 退出\n")
 type = input("请输入序号:")
 hh()
 
+if type == "update":
+  url = "https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py"
+  r = requests.get(url)
+  with open('hexo.py', 'w') as f:
+    f.write(r.text)
+  act = "chmod +x hexo.py"
+  os.system(act)
+  print("更新完毕！你现在可以通过 ./hexo.py 启动程序")
+
 if type == "0":
   action = "npm update -g && npm install -g n && n stable"
   os.system(action)
