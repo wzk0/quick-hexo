@@ -14,7 +14,6 @@ print("4) 预览           5) 上传(到Github)")
 print("6) 备份文章       7) 主题")
 print("8) 退出\n")
 print("脚本使用编辑器:nano 用法:\nCtrl O保存 之后提示是否以原文件名保存 Ctrl X退出(用了就清楚了)")
-hh()
 type = input("请输入序号:")
 hh()
 
