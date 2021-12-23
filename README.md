@@ -7,6 +7,7 @@
 ```
 wget https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py
 ```
+> 以及requests依赖
 
 ## 使用
 
