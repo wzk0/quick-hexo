@@ -56,7 +56,7 @@ if type == "2":
       action = "nano ./source/_posts/" + textname + ".md"
       os.system(action)
   if key == "2":
-    pagename = input("请输入网页名[最好是英文字母](实际上是链接地址)")
+    pagename = input("请输入网页名[最好是英文字母](实际上是链接地址):")
     action = "hexo new page " + pagename
     os.system(action)
     print("是/否直接编辑?")
