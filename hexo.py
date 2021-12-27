@@ -126,7 +126,7 @@ if type == "6":
   hh()
   if choose == "y":
     github = input("请输入要上传的Git仓库地址(格式:git@github.com:xxx/xxx.git):")
-    sh = "git init\ngit add *.md .\ngit commit -m '博客文章提交'\ngit branch -M main\ngit remote add origin " + github + "\ngit push -u origin main"
+    sh = "git init\ngit add *.md .\ngit commit -m '🦄✨🌈'\ngit branch -M main\ngit remote add origin " + github + "\ngit push -u origin main"
     with open('./source/_posts/git.sh','w') as f:
       f.write(sh)
     action = "sh git.sh"
@@ -134,7 +134,7 @@ if type == "6":
     os.system(action)
     sys.exit(1)
   if choose == "n":
-    action = "git add *.md .\ngit commit -m '博客文章提交'\ngit push -u origin main"
+    action = "git add *.md .\ngit commit -m '🦄✨🌈'\ngit push -u origin main"
     os.chdir("./source/_posts/")
     os.system(action)
     sys.exit(1)
