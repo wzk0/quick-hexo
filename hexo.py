@@ -125,9 +125,14 @@ if type == "3":
     o(action)
 
 if type == "4":
-  action = "nohup hexo s &"
-  o(action)
-  p("现在可以在 http://localhost:4000 查看网站预览")
+  action1 = "nohup hexo s &"
+  action2 = "hexo s"
+  hexos = input("是否静默启动(y/n):")
+  if hexos = "y":
+    o(action1)
+  if hexos = "n":
+    o(action2)
+  p("现在可以在 http://localhost:4000 查看网站预览了")
 
 if type == "5":
   action = "hexo g -d"
