@@ -5,6 +5,10 @@ import os
 import requests
 import sys
 
+if not os.path.exists("_config.yml"):
+  print("请在一个hexo文件夹中执行此脚本！")
+  sys.exit(1)
+
 def hh():
   print("\n")
 print("\nHexo辅助脚本")
@@ -13,9 +17,10 @@ print("\n0) 更新node和npm  1) 安装Hexo所需的一切")
 print("2) 新建           3) 编辑")
 print("4) 预览           5) 上传(到Github)")
 print("6) 备份文章       7) 主题")
-print("8) 退出\n")
+print("8) 导入文章       9) 退出\n")
 print("脚本使用编辑器:nano 用法:\nCtrl O保存 之后提示是否以原文件名保存 Ctrl X退出(用了就清楚了)")
 hh()
+
 type = input("请输入序号:")
 hh()
 
@@ -166,9 +171,14 @@ if type == "7":
     action = gc + nz + ".git ./themes"
     os.system(action)
 
-if type == "8":
+if type == "9":
   sys.exit(1)
 
 else:
   action = "python3 hexo.py"
   os.system(action)
+
+if type == "8":
+  git = input("请输入git仓库地址:")
+  action = "git clone " + git + " temp"
+  mv = "mv ./temp/*.md ./source/_posts/"
