@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
 import os
@@ -66,7 +66,7 @@ if type == "2":
       action = "nano ./source/" + pagename + "/index.md"
       os.system(action)
     else:
-      action = "python hexo.py"
+      action = "python3 hexo.py"
       os.system(action)
 
 if type == "3":
@@ -170,5 +170,5 @@ if type == "8":
   sys.exit(1)
 
 else:
-  action = "python hexo.py"
+  action = "python3 hexo.py"
   os.system(action)
