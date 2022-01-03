@@ -171,14 +171,14 @@ if type == "7":
     action = gc + nz + ".git ./themes"
     os.system(action)
 
+if type == "8":
+  git = input("请输入git仓库地址:")
+  action = "git clone " + git + " temp"
+  mv = "mv ./temp/*.md ./source/_posts/"
+
 if type == "9":
   sys.exit(1)
 
 else:
   action = "python3 hexo.py"
   os.system(action)
-
-if type == "8":
-  git = input("请输入git仓库地址:")
-  action = "git clone " + git + " temp"
-  mv = "mv ./temp/*.md ./source/_posts/"
