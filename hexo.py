@@ -174,6 +174,7 @@ if type == "7":
 if type == "8":
   git = input("请输入git仓库地址:")
   action = "git clone " + git + " temp"
+  os.system(action)
   mv = "mv ./temp/*.md ./source/_posts/"
 
 if type == "9":
