@@ -176,6 +176,7 @@ if type == "8":
   action = "git clone " + git + " temp"
   os.system(action)
   mv = "mv ./temp/*.md ./source/_posts/"
+  os.system(mv)
 
 if type == "9":
   sys.exit(1)
