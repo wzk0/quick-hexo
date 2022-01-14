@@ -142,8 +142,8 @@ if type == "6":
   choose = input("是否是第一次使用此功能(y/n):")
   hh()
   if choose == "y":
-    github = input("请输入要上传的Git仓库地址(格式:git@github.com:xxx/xxx.git):")
-    sh = "git init\ngit add *.md .\ngit commit -m '🦄✨🌈'\ngit branch -M main\ngit remote add origin " + github + "\ngit push -u origin main"
+    github = input("请输入要上传的Git仓库地址:")
+    sh = "git init\ngit add *.md .\ngit commit -m '博客文章备份'\ngit branch -M main\ngit remote add origin " + github + "\ngit push -u origin main"
     with open('./source/_posts/git.sh','w') as f:
       f.write(sh)
     action = "sh git.sh"
@@ -151,7 +151,7 @@ if type == "6":
     o(action)
     sys.exit(1)
   if choose == "n":
-    action = "git add *.md .\ngit commit -m '🦄✨🌈'\ngit push -u origin main"
+    action = "git add *.md .\ngit commit -m '博客文章备份'\ngit push -u origin main"
     os.chdir("./source/_posts/")
     o(action)
     sys.exit(1)
