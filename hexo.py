@@ -40,7 +40,7 @@ if type == "0":
   o(action)
 
 if type == "1":
-  action = "apt install git && apt install nodejs && apt install nano && npm install hexo-cli -g && npm install hexo-deployer-git --save"
+  action = "apt install git nodejs nano -y && npm install hexo-cli -g && npm install hexo-deployer-git --save"
   o(action)
 
 if type == "2":
