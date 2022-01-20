@@ -11,10 +11,6 @@ def o(action):
 def p(str):
   print(str)
 
-if not os.path.exists("_config.yml"):
-  p("请在一个hexo文件夹中执行此脚本！")
-  sys.exit(1)
-
 def hh():
   p("\n")
 p("\nHexo辅助脚本")
