@@ -124,8 +124,8 @@ if type == "3":
 if type == "4":
   action1 = "nohup hexo s &"
   action2 = "hexo s"
-  action3 = "http-server"
-  action4 = "nohup http-server &"
+  action3 = "hexo g && http-server"
+  action4 = "hexo g && nohup http-server &"
   p("1) 本地静默启动   2) 本地非静默启动(方便查看情况)")
   p("3) 局域网非静默启动 4) 局域网静默启动")
   hexos = input("请选择启动方式:")
@@ -136,8 +136,10 @@ if type == "4":
     o(action2)
     p("现在可以在 http://localhost:4000 查看网站预览了")
   if hexos == "3":
+    os.chdir("./public")
     o(action3)
   if hexos == "4":
+    os.chdir("./public")
     o(action4)
 
 if type == "5":
@@ -191,6 +193,10 @@ if type == "7":
 
 if type == "8":
   git = input("请输入git仓库地址:")
+  p("是否删除之前的所有文章(适用于w w):")
+  rm = ("y/n:")
+  if rm == "y":
+    o("rm -rf ./source/_posts")
   action = "git clone " + git + " temp"
   o(action)
   mv = "mv ./temp/*.md ./source/_posts/"
