@@ -19,7 +19,8 @@ p("\n0) 更新node和npm  1) 安装Hexo所需的一切")
 p("2) 新建           3) 编辑")
 p("4) 预览           5) 上传(到Github)")
 p("6) 备份文章       7) 主题")
-p("8) 导入文章       9) 退出\n")
+p("8) 导入文章       9) 列出")
+p("10) 退出")
 p("脚本使用编辑器:nano 用法:\nCtrl O保存 之后提示是否以原文件名保存 Ctrl X退出(用了就清楚了)")
 hh()
 
@@ -40,7 +41,7 @@ if type == "0":
   o(action)
 
 if type == "1":
-  action = "apt install git nodejs nano -y && npm install hexo-cli -g && npm install hexo-deployer-git --save"
+  action = "apt install git nodejs nano -y && npm install http-server -g npm install hexo-cli -g && npm install hexo-deployer-git --save"
   o(action)
 
 if type == "2":
@@ -123,12 +124,21 @@ if type == "3":
 if type == "4":
   action1 = "nohup hexo s &"
   action2 = "hexo s"
-  hexos = input("是否静默启动(y/n):")
-  if hexos == "y":
+  action3 = "http-server"
+  action4 = "nohup http-server &"
+  p("1) 本地静默启动   2) 本地非静默启动(方便查看情况)")
+  p("3) 局域网非静默启动 4) 局域网静默启动")
+  hexos = input("请选择启动方式:")
+  if hexos == "1":
     o(action1)
-  if hexos == "n":
+    p("现在可以在 http://localhost:4000 查看网站预览了")
+  if hexos == "2":
     o(action2)
-  p("现在可以在 http://localhost:4000 查看网站预览了")
+    p("现在可以在 http://localhost:4000 查看网站预览了")
+  if hexos == "3":
+    o(action3)
+  if hexos == "4":
+    o(action4)
 
 if type == "5":
   action = "hexo g -d"
@@ -189,6 +199,14 @@ if type == "8":
   o(deltemp)
 
 if type == "9":
+  act = "hexo list post"
+  p("目前已有的文章:")
+  o(act)
+  action = "hexo list page"
+  p("目前已有的页面:")
+  o(action)
+
+if type == "10":
   sys.exit(1)
 
 else:
