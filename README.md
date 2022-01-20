@@ -4,18 +4,31 @@
 
 ## 安装(获取)
 
+首先需要安装python3，wget:
+
+```
+apt update && apt upgrade
+
+apt install python3 wget -y
+```
+然后获取脚本:
+
 ```
 wget https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py
 ```
-> 以及requests依赖
+以及安装requests依赖:
+
+```
+pip3 install requests
+```
 
 ## 使用
 
 ```
-python hexo.py
+python3 hexo.py
 ```
 
-> 注意，要在博客根目录下运行.
+> 注意，要在博客根目录下运行.如果要新建网站，则不需要.
 
 ## 功能
 
