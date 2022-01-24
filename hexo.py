@@ -128,7 +128,7 @@ if type == "4":
   action4 = "hexo g && nohup http-server &"
   p("1) 本地静默启动   2) 本地非静默启动(方便查看情况)")
   p("3) 局域网非静默启动 4) 局域网静默启动")
-  hexos = input("请选择启动方式:")
+  hexos = input("/n请选择启动方式:")
   if hexos == "1":
     o(action1)
     p("现在可以在 http://localhost:4000 查看网站预览了")
