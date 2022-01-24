@@ -1,0 +1,52 @@
+name: Pack_And_Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      Release_Version:
+        description: '发布版本'
+        required: true
+        default: 'v1.0'
+      Release_Describe:
+        description: '版本说明'
+        required: true
+
+jobs:
+  pack:
+    runs-on: windows-latest
+    steps:
+      - name: Download Code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Dependces
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install pyinstaller
+          pip3 install -r requirements.txt
+      - name: Pack
+        run: |
+           mkdir ${{ github.event.inputs.Release_Version }}
+          pyinstaller -F hexo.py
+          mv dist/* ${{ github.event.inputs.Release_Version }}/
+          mv README.md ${{ github.event.inputs.Release_Version }}/
+          mv LICENSE ${{ github.event.inputs.Release_Version }}/
+          zip -r ${{ github.event.inputs.Release_Version }}.zip ${{ github.event.inputs.Release_Version }}
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.inputs.Release_Version }}
+          path: ${{ github.event.inputs.Release_Version }}
+      - name: Create release and upload asset
+        if: ${{ github.event.inputs.Release_Version != 'none' && github.event.inputs.Release_Version != '' }}
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ github.event.inputs.Release_Version }}.zip
+          file_glob: true
+          tag: ${{ github.event.inputs.Release_Version }}
+          overwrite: true
+          release_name: "${{ github.event.inputs.Release_Version }}"
+          body: "${{ github.event.inputs.Release_Describe }}"
+     
