@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pack:
+  pack(x86):
     runs-on: ubuntu-latest
     steps:
       - id: commit
@@ -37,6 +37,45 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.commit.outputs.short }}.zip
+          file_glob: true
+          tag: ${{ steps.commit.outputs.short }}
+          overwrite: true
+          release_name: ${{ steps.commit.outputs.short }}
+          body: |
+            来自commit ${{ steps.commit.outputs.short }}的自动打包
+          prerelease: true
+  pack(arm):
+    runs-on: [ubuntu-latest, ARM64]
+    steps:
+      - id: commit
+        uses: pr-mpt/actions-commit-hash@v1
+      - name: Download Code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - name: Dependces
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install pyinstaller
+          pip3 install -r requirements.txt
+      - name: Pack
+        run: |
+          mkdir ${{ steps.commit.outputs.short }}
+          pyinstaller -F hexo.py
+          mv dist/* ${{ steps.commit.outputs.short }}/
+          mv README.md ${{ steps.commit.outputs.short }}/
+          mv LICENSE ${{ steps.commit.outputs.short }}/
+          zip -r ${{ steps.commit.outputs.short }}_arm.zip ${{ steps.commit.outputs.short }}
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.commit.outputs.short }}_arm
+          path: ${{ steps.commit.outputs.short }}
+      - name: Create Pre-release And Upload Asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ steps.commit.outputs.short }}_arm.zip
           file_glob: true
           tag: ${{ steps.commit.outputs.short }}
           overwrite: true
