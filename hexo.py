@@ -17,6 +17,7 @@ def hh():
 #环境检测相关
 if platform.system().lower() == 'windows':
   print('此脚本不支持Windows系统')
+  exit()
 
 try:
   import requests
