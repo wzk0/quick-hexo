@@ -27,7 +27,7 @@ jobs:
           pip3 install -r requirements.txt
       - name: Pack
         run: |
-           mkdir ${{ github.event.inputs.Release_Version }}
+          mkdir ${{ github.event.inputs.Release_Version }}
           pyinstaller -F hexo.py
           mv dist/* ${{ github.event.inputs.Release_Version }}/
           mv README.md ${{ github.event.inputs.Release_Version }}/
@@ -49,4 +49,3 @@ jobs:
           overwrite: true
           release_name: "${{ github.event.inputs.Release_Version }}"
           body: "${{ github.event.inputs.Release_Describe }}"
-     
