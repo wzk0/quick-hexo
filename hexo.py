@@ -56,7 +56,7 @@ while True:
   if type == "1":
     with os.popen(r'which apt', 'r') as f:#查找apt命令
       apt_result = f.read()
-    if apt_result.endswith('apt') == False:
+    if apt_result == '/usr/bin/apt':
       install_command = 'yum install -y git nodejs nano'#当不存在apt命令时使用yum安装
     else:
       install_command = 'apt install git nodejs nano -y'
