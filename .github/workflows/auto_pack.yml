@@ -11,7 +11,7 @@ jobs:
       - id: commit
         uses: pr-mpt/actions-commit-hash@v1
       - name: Download Code
-        uses: actions/check${{ steps.commit.outputs.short }}@v2
+        uses: actions/checkout@v2
         with:
           persist-credentials: false
       - name: Dependces
