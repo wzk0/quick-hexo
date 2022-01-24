@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pack(x86):
+  pack-x86:
     runs-on: ubuntu-latest
     steps:
       - id: commit
@@ -44,7 +44,7 @@ jobs:
           body: |
             来自commit ${{ steps.commit.outputs.short }}的自动打包
           prerelease: true
-  pack(arm):
+  pack-arm:
     runs-on: [ubuntu-latest, ARM64]
     steps:
       - id: commit
