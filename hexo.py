@@ -14,12 +14,13 @@ def p(str):
 def n():
 	p("\n")
 def q():
-	sys.exit(1)
+	sys.exit(0)
 def re():
 	action = "python3 hexo.py"
 	o(action)
 
 #检测
+o("clear")
 if platform.system() == 'Windows':
   	p('此脚本不支持Windows系统')
   	q()
@@ -30,6 +31,7 @@ try:
 	p("模块已安装 可以输入 update 进行更新!")
 	n()
 except ImportError:
+	p("检测到 requests 模块未安装,正在安装...")
 	o("pip3 install requests")
 	re()
 
@@ -265,6 +267,7 @@ class Hexo(object):
 		q()
 
 member = Hexo(666)
+
 member.Desktop()
 n()
 num = input("请输入序号:")
@@ -299,6 +302,8 @@ if num == "11":
 	member.Quit()
 else:
 	re()
+	o("clear")
+	
 
 
 
