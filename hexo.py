@@ -201,7 +201,7 @@ class Hexo(object):
 
 	def Preview(self):
 		p("1) 本地静默启动				2) 本地非静默启动(方便查看情况)")
-		p("3) 局域网静默启动(请清楚自己的IP)				4) 局域网非静默启动")
+		p("3) 局域网静默启动(请清楚自己的IP)	4) 局域网非静默启动")
 		action1 = "nohup hexo s &"
 		action2 = "hexo s"
 		action3 = "hexo g && nohup http-server &"
