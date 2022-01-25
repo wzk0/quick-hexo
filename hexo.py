@@ -4,7 +4,7 @@
 #模块
 import os
 import sys
-import platform  
+import platform
 
 #快捷方式
 def o(action):
@@ -19,25 +19,25 @@ def re():
 	action = "python3 hexo.py"
 	o(action)
 
+#检测
+if platform.system() == 'Windows':
+  	p('此脚本不支持Windows系统')
+  	q()
+else:
+  	p("当前系统为: " + platform.system() + ",检测通过!")
+try:
+	import requests
+	p("模块已安装 可以输入 update 进行更新!")
+	n()
+except ImportError:
+	o("pip3 install requests")
+	re()
+
 #定义类
 class Hexo(object):
 
 	def __init__(self,num):
 		self.num=num
-
-	def BeFore(self):
-		if platform.system() == 'Windows':
-  			p('此脚本不支持Windows系统')
-  			q()
-		else:
-  			p("当前系统为: " + platform.system() + ",检测通过!")
-  			n()
-		try:
-			import requests
-		except:
-			p("未安装requests插件 正在安装...")
-			o("pip3 install requests")
-			n()
 
 	def Desktop(self):
 		p("Hexo辅助脚本")
@@ -265,8 +265,6 @@ class Hexo(object):
 		q()
 
 member = Hexo(666)
-
-member.BeFore()
 member.Desktop()
 n()
 num = input("请输入序号:")
