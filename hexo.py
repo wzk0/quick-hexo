@@ -5,6 +5,7 @@
 import os
 import sys
 import platform
+import time
 
 #快捷方式
 def o(action):
