@@ -87,13 +87,13 @@ class Hexo(object):
 		p("已将所有重要文件打包在 backup.tar.gz 中!")
 
 	def Update(self):
+		p("更新完毕！你现在可以通过 ./hexo.py 启动程序")
 		url = "https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py"
 		r = requests.get(url)
 		with open('hexo.py', 'w') as f:
 			f.write(r.text)
 		act = "chmod +x hexo.py"
 		o(act)
-		p("更新完毕！你现在可以通过 ./hexo.py 启动程序")
 
 	def UpdateNode(self):
 		print("是否需要sudo权限(Termux用户请输入n)?")
