@@ -85,6 +85,7 @@ class Hexo(object):
 		o(tar)
 		o(rm)
 		p("已将所有重要文件打包在 backup.tar.gz 中!")
+		time.sleep(3)
 
 	def Update(self):
 		p("更新完毕！你现在可以通过 ./hexo.py 启动程序")
