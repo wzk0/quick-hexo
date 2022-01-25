@@ -50,10 +50,41 @@ class Hexo(object):
 		p("4) 预览			5) 上传(到Github)")
 		p("6) 备份文章		7) 主题")
 		p("8) 导入文章		9) 列出内容")
-		p("10) 清理缓存		11) 退出")
+		p("10) 清理缓存		11) 打包重要文件")
+		p("q) 退出")
 		n()
 		p("脚本使用编辑器:nano")
 		p("用法:\nCtrl O保存 之后提示是否以原文件名保存 Ctrl X退出(用了就清楚了)")
+
+	def Pack(self):
+		p("此功能将会打包以下内容:\n")
+		p("1. 根目录的配置文件")
+		p("2. 特定主题的配置文件")
+		p("3. 所有文章")
+		p("4. 所有模板\n")
+		p("已有的主题名:\n")
+		o("ls ./themes")
+		p("\n")
+		theme = input("请输入需要备份的主题名(将会备份该主题的配置文件):")
+		mk = "mkdir temp && mkdir temp/模板 && mkdir temp/文章与页面"
+		rcfg = "_config.yml"
+		tcfg = "themes/" + theme + "/_config.yml"
+		src = "source/*"
+		scf = "scaffolds/*"
+		o(mk)
+		rcf = "cp " + rcfg + " temp/根目录配置.yml"
+		tcf = "cp " + tcfg + " temp/" + theme + "主题配置.yml"
+		sr = "cp -r " + src + " temp/文章与页面"
+		sc = "cp -r " + scf + " temp/模板"
+		tar = "tar -cf backup.tar.gz temp"
+		rm = "rm -rf temp"
+		o(rcf)
+		o(tcf)
+		o(sr)
+		o(sc)
+		o(tar)
+		o(rm)
+		p("已将所有重要文件打包在 backup.tar.gz 中!")
 
 	def Update(self):
 		url = "https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py"
@@ -298,7 +329,9 @@ if num == "9":
 	member.List()
 if num == "10":
 	member.Clean()
-if num == "11":
+if num == "10":
+	member.Pack()
+if num == "q":
 	member.Quit()
 else:
 	re()
