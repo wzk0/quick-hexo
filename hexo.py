@@ -329,7 +329,7 @@ if num == "9":
 	member.List()
 if num == "10":
 	member.Clean()
-if num == "10":
+if num == "11":
 	member.Pack()
 if num == "q":
 	member.Quit()
