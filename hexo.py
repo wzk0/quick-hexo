@@ -85,7 +85,7 @@ class Hexo(object):
 		o(sc)
 		o(tar)
 		o(rm)
-		p("已将所有重要文件打包在 backup.tar.gz 中!")
+		p("\n已将所有重要文件打包在 backup.tar.gz 中!")
 		time.sleep(3)
 
 	def Update(self):
