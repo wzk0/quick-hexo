@@ -106,7 +106,7 @@ class Hexo(object):
 				action = "nano ./source/_posts/" + textname + ".md"
 				o(action)
 			else:
-				r()
+				re()
 		if key == "2":
 			pagename = input("请输入网页名[最好是英文字母](实际上是链接地址):")
 			action = "hexo new page " + pagename
