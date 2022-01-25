@@ -302,9 +302,6 @@ if num == "11":
 	member.Quit()
 else:
 	re()
-	o("clear")
-	
-
 
 
 
