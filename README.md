@@ -34,7 +34,7 @@ python3 hexo.py
 
 如图所示:
 
-![图](https://raw.githubusercontent.com/wzk0/photo/main/2022-01-24%2010-12-51%20%E7%9A%84%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png)
+![图](https://raw.githubusercontent.com/wzk0/photo/main/2022-01-26%2014-16-00%20%E7%9A%84%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png)
 
 ## PS
 

@@ -202,6 +202,7 @@ class Hexo(object):
 	def Preview(self):
 		p("1) 本地静默启动				2) 本地非静默启动(方便查看情况)")
 		p("3) 局域网静默启动(请清楚自己的IP)	4) 局域网非静默启动")
+		p("若要杀死静默进程 输入 kill")
 		action1 = "nohup hexo s &"
 		action2 = "hexo s"
 		action3 = "hexo g && nohup http-server &"
@@ -212,6 +213,8 @@ class Hexo(object):
 		if hexos == "1":
 			o(action1)
 			p("现在可以在 http://localhost:4000 查看网站预览了")
+			n()
+			time.sleep(2)
 		if hexos == "2":
 			o(action2)
 			p("现在可以在 http://localhost:4000 查看网站预览了")
@@ -221,6 +224,13 @@ class Hexo(object):
 		if hexos == "4":
 			os.chdir("./public")
 			o(action4)
+		if hexos == "kill":
+			do1 = "fuser -k -n tcp 8080"
+			do2 = "fuser -k -n tcp 4000"
+			o(do1)
+			o(do2)
+			p("完成!已经杀死 8080端口 和 4000端口 的进程!")
+			time.sleep(2)
 
 	def Upload(self):
 		o("hexo g -d")
