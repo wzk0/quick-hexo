@@ -67,25 +67,36 @@ class Hexo(object):
 		o("ls ./themes")
 		p("\n")
 		theme = input("请输入需要备份的主题名(将会备份该主题的配置文件):")
-		mk = "mkdir temp && mkdir temp/模板 && mkdir temp/文章与页面"
+		mk = "mkdir temp && mkdir temp/模板 && mkdir temp/文章与页面 && mkdir temp/主题相关资源"
+		o(mk)
+		readme = "解压完文件后:\n请将此文件夹所有文件移动到网站根目录\n然后执行脚本 backup.sh\n\n或者:\n将 根目录配置.yml 重命名为 _config.yml ,位置为 . ,替换掉 ./_config.yml ;\n将 " + theme + "主题配置.yml 重命名为 _config.yml ,位置为 ./themes/" + theme + "/_config.yml ,替换掉 ./themes/" + theme + "/_config.yml ;\n将 文章与页面 重命名为 source ,替换掉 ./source;\n将 模板 重命名为 scaffolds ,替换掉 ./scaffolds ;\n将 主题相关资源 重命名为 source ,替换掉 ./themes/" + theme + "/source ;\n如果无法看懂,请执行 backup.sh ."
+		backupsh = "rm -rf backup && rm -rf themes/" + theme + "/_config.yml && mv *主题配置.yml themes/" + theme + "/_config.yml && mv 根目录* _config.yml && rm -rf source && mv 文章与页面 source && rm -rf scaffolds && mv 模板 scaffolds && rm -rf themes/" + theme + "/source && mv 主题相关资源 themes/" + theme + "/source && rm -rf README.txt* && rm -rf backup.sh"
+		with open('README.txt', 'w') as f:
+			f.write(readme)
+		with open('backup.sh','w') as f:
+			f.write(backupsh)
+		o("mv README.txt temp")
+		o("mv backup.sh temp")
 		rcfg = "_config.yml"
 		tcfg = "themes/" + theme + "/_config.yml"
 		src = "source/*"
 		scf = "scaffolds/*"
-		o(mk)
+		thrsc = "themes/" + theme + "/source/*"
 		rcf = "cp " + rcfg + " temp/根目录配置.yml"
 		tcf = "cp " + tcfg + " temp/" + theme + "主题配置.yml"
 		sr = "cp -r " + src + " temp/文章与页面"
 		sc = "cp -r " + scf + " temp/模板"
+		tc = "cp -r " + thrsc + " temp/主题相关资源"
 		tar = "tar -cf backup.tar.gz temp"
 		rm = "rm -rf temp"
 		o(rcf)
 		o(tcf)
 		o(sr)
 		o(sc)
+		o(tc)
 		o(tar)
 		o(rm)
-		p("\n已将所有重要文件打包在 backup.tar.gz 中!")
+		p("\n已将所有重要文件打包在 backup.tar.gz 中!解压时请阅读 README.txt !")
 		time.sleep(3)
 
 	def Update(self):
@@ -234,6 +245,7 @@ class Hexo(object):
 
 	def Upload(self):
 		o("hexo g -d")
+		time.sleep(2)
 
 	def Backup(self):
 		choose = input("是否是第一次使用此功能(y/n):")
