@@ -62,14 +62,15 @@ class Hexo(object):
 		p("1. 根目录的配置文件")
 		p("2. 特定主题的配置文件")
 		p("3. 所有文章")
-		p("4. 所有模板\n")
+		p("4. 所有模板")
+		p("5. 特定主题的资产(本地图片等)\n")
 		p("已有的主题名:\n")
 		o("ls ./themes")
 		p("\n")
 		theme = input("请输入需要备份的主题名(将会备份该主题的配置文件):")
 		mk = "mkdir temp && mkdir temp/模板 && mkdir temp/文章与页面 && mkdir temp/主题相关资源"
 		o(mk)
-		readme = "解压完文件后:\n请将此文件夹所有文件移动到网站根目录\n然后执行脚本 backup.sh\n\n或者:\n将 根目录配置.yml 重命名为 _config.yml ,位置为 . ,替换掉 ./_config.yml ;\n将 " + theme + "主题配置.yml 重命名为 _config.yml ,位置为 ./themes/" + theme + "/_config.yml ,替换掉 ./themes/" + theme + "/_config.yml ;\n将 文章与页面 重命名为 source ,替换掉 ./source;\n将 模板 重命名为 scaffolds ,替换掉 ./scaffolds ;\n将 主题相关资源 重命名为 source ,替换掉 ./themes/" + theme + "/source ;\n如果无法看懂,请执行 backup.sh ."
+		readme = "解压完文件后:\n请将此文件夹所有文件移动到网站根目录\n然后执行脚本 backup.sh\n注意: 脚本会将现有的所有文章,页面,配置删除,换成该备份文件中的内容,请最好使用下面的手动方式进行筛选!\n\n或者:\n将 根目录配置.yml 重命名为 _config.yml ,位置为 . ,替换掉 ./_config.yml ;\n将 " + theme + "主题配置.yml 重命名为 _config.yml ,位置为 ./themes/" + theme + "/_config.yml ,替换掉 ./themes/" + theme + "/_config.yml ;\n将 文章与页面 重命名为 source ,替换掉 ./source;\n将 模板 重命名为 scaffolds ,替换掉 ./scaffolds ;\n将 主题相关资源 重命名为 source ,替换掉 ./themes/" + theme + "/source ;\n如果无法看懂,请执行 backup.sh ."
 		backupsh = "rm -rf backup && rm -rf themes/" + theme + "/_config.yml && mv *主题配置.yml themes/" + theme + "/_config.yml && mv 根目录* _config.yml && rm -rf source && mv 文章与页面 source && rm -rf scaffolds && mv 模板 scaffolds && rm -rf themes/" + theme + "/source && mv 主题相关资源 themes/" + theme + "/source && rm -rf README.txt* && rm -rf backup.sh"
 		with open('README.txt', 'w') as f:
 			f.write(readme)
