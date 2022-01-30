@@ -314,6 +314,7 @@ class Hexo(object):
 		action = "hexo list page"
 		p("目前已有的页面:")
 		o(action)
+		a = input("输入回车以继续:")
 
 	def Clean(self):
 		act = "hexo clean"
