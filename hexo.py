@@ -107,6 +107,8 @@ class Hexo(object):
 			os.chdir("./source/_posts/")
 			updatenow="git add * . && git commit -m '提交' && git push -u origin main"
 			o(updatenow)
+			rmrealse='rm backup.tar.gz'
+			o(rmrealse)
 			sys.exit(0)
 
 	def Update(self):
