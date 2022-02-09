@@ -97,8 +97,17 @@ class Hexo(object):
 		o(tc)
 		o(tar)
 		o(rm)
-		p("\n已将所有重要文件打包在 backup.tar.gz 中!解压时请阅读 README.txt !")
-		time.sleep(3)
+		p("\n已将所有重要文件打包在 backup.tar.gz 中!解压时请阅读 README.txt !\n")
+		p('是否上传打包文件到备份文章所在的仓库？')
+		gitreleasebackup=input('y/n:')
+		p('\n')
+		if gitreleasebackup=='y':
+			act='cp backup.tar.gz ./source/_posts/backup.tar.gz'
+			o(act)
+			os.chdir("./source/_posts/")
+			updatenow="git add * . && git commit -m '提交' && git push -u origin main"
+			o(updatenow)
+			sys.exit(0)
 
 	def Update(self):
 		p("更新完毕！你现在可以通过 ./hexo.py 启动程序")
