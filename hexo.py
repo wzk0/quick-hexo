@@ -10,6 +10,8 @@ def do(what):
 		sys.exit(1)
 	if what=='restart':
 		os.system('python3 hexo.py')
+	if what=='clean':
+		os.system('hexo clean')
 
 def ls(ll,num,icon):
 	print(icon*num+'\n')
@@ -198,6 +200,7 @@ def edit(data):
 	if choose in dic.keys():
 		edt(dic[choose])
 		if auto_pack=='y':
+			print('\n检测到修改了配置或模板文件,开始进入自动打包流程.\n')
 			packup(data)
 		else:
 			pass
@@ -248,10 +251,12 @@ def preview(data):
 		os.system(get_act(choose))
 	else:
 		os.system(get_act(choose))
+	print('\n完成!')
 
 def upload(data):
 	auto_post_up=data['auto_post_up']
 	os.system('hexo g -d')
+	time.sleep(2)
 	if auto_post_up=='y':
 		backup(data)
 	print('\n上传完成!')
@@ -264,7 +269,7 @@ def theme(data):
 	else:
 		url=l
 	d=requests.get(url)
-	dic=dict(d.text)
+	dic=eval(d.text)
 	v=[]
 	for l in list(dic.values()):
 		ll=l.replace('/','的')
@@ -302,13 +307,14 @@ def putin(data):
 
 def lst(data):
 	print('所有文章如下:\n')
-	ls(os.listdir('source/_posts'),13,'#')
-	print('所有页面如下:\n')
-	ls(os.listdir('source').remove('_posts'),13,'#')
+	os.system('hexo list post')
+	print('\n所有页面如下:\n')
+	os.system('hexo list page')
 	print('\n列出完成!')
 
 def clean(data):
-	os.system('hexo clean')
+	do('clean')
+	print('\n清理完成!')
 
 def re():
 	sure=input('确认清除所有旧配置(y/n):')
@@ -331,55 +337,39 @@ def main():
 	with open('data.json','r')as f:
 		dt=f.read()
 	data=json.loads(dt)
-
 	choose=input('请输入序号:')
 	os.system('clear')
-	
 	if choose=='0':
 		ll=['n. 更新nodejs及npm','s. 更新脚本']
 		ls(ll,18,'#')
 		what=input('请输入序号:')
 		update(what,data)
-
 	if choose=='1':
 		download(data)
-
 	if choose=='2':
 		new(data)
-
 	if choose=='3':
 		edit(data)
-
 	if choose=='4':
 		preview(data)
-
 	if choose=='5':
 		upload(data)
-
 	if choose=='6':
 		backup(data)
-
 	if choose=='7':
 		theme(data)
-
 	if choose=='8':
 		putin(data)
-
 	if choose=='9':
 		lst(data)
-
 	if choose=='10':
 		clean(data)
-
 	if choose=='11':
 		packup(data)
-
 	if choose=='re':
 		re()
-
 	if choose=='q':
 		q()
-
 	if choose=='s':
 		s(data)
 
