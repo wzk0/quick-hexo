@@ -149,9 +149,9 @@ def download(data):
 	pack_manager=data['pack_manager']
 	editor=data['editor']
 	if sudo=='y':
-		action="sudo "+pack_manager+" install git nodejs npm "+editor+" -y && sudo npm install http-server --location=global && sudo npm install hexo-cli --location=global && sudo npm install hexo-deployer-git --location=global"
+		action="sudo "+pack_manager+" install git nodejs npm "+editor+" -y && sudo npm install http-server --location=global && sudo npm install hexo-cli --location=global && sudo npm install hexo-deployer-git --save"
 	else:
-		action=pack_managerg+" install git nodejs npm "+editor+" -y && npm install http-server --location=global npm install hexo-cli --location=global && npm install hexo-deployer-git --location=global"
+		action=pack_managerg+" install git nodejs npm "+editor+" -y && npm install http-server --location=global npm install hexo-cli --location=global && npm install hexo-deployer-git --save"
 	os.system(action)
 	print('\n安装完成!')
 
