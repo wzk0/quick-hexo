@@ -10,9 +10,10 @@ user_name=str(getuser())
 clone_address='https://ghproxy.com/https://github.com/'
 theme_address='https://ghproxy.com/https://raw.githubusercontent.com/wzk0/quick-hexo/main/theme.json'
 update_program_address='https://ghproxy.com/https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py'
+server_running='http-server'
 setting_data_file='setting_data.json'
 raw_number=6
-tip_list=['在修改完网站配置文件后记得时常备份🤔','一些程序相关的变量放在9~15行😎','建议开启自动备份文章功能🥳']
+tip_list=['在修改完网站配置文件后记得时常打包备份🤔','一些程序相关的变量放在9~15行😎','建议开启自动备份文章功能🥳','打包后的压缩包建议手动上传至仓库的release或其他地方噢🥰']
 
 ##美观输出列表元素, 可用tip_list变量设置一行要输出多少个列表元素.
 def list_print(raw_list):
@@ -147,13 +148,13 @@ class delete():
 
 ##预览类.
 class preview():
-	item_list=['本地预览','局域网预览(需安装http-server)']
+	item_list=['本地预览','局域网预览']
 	def local():
 		system('hexo s')
 	def lan():
 		system('hexo clean && hexo g')
 		chdir('public')
-		system('http-server')
+		system(server_running)
 
 ##数据类.
 class hexo_data():
