@@ -221,9 +221,9 @@ def program_setting(editor):
 
 ##更新程序.
 def program_update():
-	new_print('正在获取更新...')
+	new_print('正在获取更新...','info')
 	with open(path.basename(__file__),'w')as new_program:
-		new_program.write(get(update_program_address))
+		new_program.write(get(update_program_address).text)
 	new_print('更新完成!','success')
 
 def program_exit():
