@@ -45,6 +45,7 @@ def setting():
 ##启动检测与读取, 同时随机输出一句小提示.
 def check():
 	system('clear')
+	new_print('这可能不是一个hexo文件夹.','danger') if not path.exists('_config.yml') else new_print('这是一个hexo文件夹!','info')
 	(setting() if input('\n没有检测到配置文件, 现在是/否(y/n)进行配置:')=='y' else exit()) if not path.exists(setting_data_file) else new_print('正在读取配置...','info')
 	system('rm -rf .temp') if path.exists('.temp') else (system('mkdir drafts') if not path.exists('drafts') else new_print('配置读取完成!','success'))
 	new_print('%s\n'%choice(tip_list),'info')
