@@ -184,7 +184,7 @@ class backup():
 	item_list=['备份文章','备份所有重要数据']
 	def post(backup_repo):
 		system('git clone %s .backup_repo --depth 1 && rm .backup_repo/*.md && cp source/_posts/*.md .backup_repo'%backup_repo) if not path.exists('.backup_repo') else system('rm .backup_repo/*.md && cp source/_posts/*.md .backup_repo')
-		system('cp -r drafts .backup_repo')
+		system('cp -r drafts .backup_repo') if not path.exists('.backup_repo/drafts') else system('rm -rf .backup_repo/drafts && cp -r drafts .backup_repo')
 		chdir('.backup_repo')
 		system("git add * . && git commit -m '%s备份' && git push -u origin main"%strftime("%Y-%m-%d %H:%M:%S",localtime()))
 		new_print('文章备份完成!','success')
