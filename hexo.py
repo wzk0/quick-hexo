@@ -1,376 +1,281 @@
-import os
-import sys
-import platform
-import time
-import requests
-import json
+from requests import get
+from json import loads,dumps
+from time import strftime,localtime
+from os import path,system,chdir,listdir
+from getpass import getuser
+from sys import exit
+from random import choice
 
-def do(what):
-	if what=='quit':
-		sys.exit(1)
-	if what=='restart':
-		os.system('python3 hexo.py')
-	if what=='clean':
-		os.system('hexo clean')
+user_name=str(getuser())
+clone_address='https://ghproxy.com/https://github.com/'
+theme_address='https://ghproxy.com/https://raw.githubusercontent.com/wzk0/quick-hexo/main/theme.json'
+update_program_address='https://ghproxy.com/https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py'
+setting_data_file='setting_data.json'
+raw_number=6
+tip_list=['在修改完网站配置文件后记得时常备份🤔','一些程序相关的变量放在9~15行😎','建议开启自动备份文章功能🥳']
 
-def ls(ll,num,icon):
-	print(icon*num+'\n')
-	for l in ll:
-		print(l,end='\n\n')
-	print(icon*num+'\n')
+##美观输出列表元素, 可用tip_list变量设置一行要输出多少个列表元素.
+def list_print(raw_list):
+	for element in range(len(raw_list)):
+		print(str(element)+'. '+str(raw_list[element]),end='  │  ') if (element+1)%raw_number!=0 else print(str(element)+'. '+str(raw_list[element])+'  │\n')
 
-def show_ls(names):
-	lenth=len(names)-1
-	zero=0
-	while zero<=lenth:
-		print(str(zero)+'. '+str(names[zero])+'\n')
-		zero+=1
+##可使用标签的print函数, 用来显示不同的颜色.
+def new_print(string,theme=''):
+	print('\033[1;32m%s\033[0m'%string) if theme=='success' else (print('\033[1;34m%s\033[0m'%string) if theme=='info' else (print('\033[1;31m%s\033[0m'%string) if theme=='danger' else print(string)))
 
-def get_ls(path):
-	ls=os.listdir(path)
-	dic={}
-	for l in ls:
-		dic[str(ls.index(l))]=l
-	return dic
+##读取配置文件.
+def get_from_json(json_file):
+	try:
+		with open(json_file,'r')as file:
+			return loads(file.read())
+	except:
+		new_print('配置文件损坏! 已删除当前配置文件, 请重启程序重新进行配置!','danger')
+		system('rm %s'%setting_data_file)
 
-def check(system):
-	os.system('clear')
-	if system=='Windows':
-		print('此脚本部分功能不支持'+system+'系统!\n')
-	else:
-		print("当前系统为: "+system+",检测通过!\n")
-	if os.path.exists('source/_posts/*.tar.gz'):
-		os.system('rm -rf source/_posts/*.tar.gz')
-	if not os.path.exists('firstrun'):
-		print('检测到这是你第一次运行此脚本,请开始进行以下配置:')
-		repo=input('\n请输入远端Git仓库地址(存放备份文章或重要文件):')
-		commit=input('\n请输入每次上传时的commit:')
-		auto_post_up=input('\n请选择是否在上传完成后自动备份文章(y/n):')
-		auto_pack=input('\n请选择是否在修改配置或模板文件后自动打包(y/n):')
-		auto_pack_up=input('\n请选择是否将打包后的文件自动上传到远端Git仓库(y/n):')
-		pack_name=input('\n请输入打包后的文件名:')
-		editor=input('\n请输入要使用的终端文本编辑器(nano,vi...):')
-		pack_manager=input('\n请输入要使用的包管理器(apt,yum...):')
-		sudo=input('\n请选择是否需要sudo(y/n):')
-		proxy=input('\n请选择是否优先选择代理(y/n):')
-		git=input('\n请选择是否在导入远端文章时保留git历史(y/n):')
-		better=input('\n请选择导入文章时的本地(l)或远端(c)文章的优先度(l/c):')
-		data={'repo':repo,'commit':commit,'auto_post_up':auto_post_up,'auto_pack':auto_pack,'auto_pack_up':auto_pack_up,'pack_name':pack_name,'editor':editor,'pack_manager':pack_manager,'sudo':sudo,'proxy':proxy,'git':git,'better':better}
-		with open('data.json','w')as f:
-			f.write(json.dumps(data,ensure_ascii=False))
-		os.system('touch firstrun && clear')
+##配置(动词)文件.
+def setting():
+	backup_repo=input('\n请输入备份仓库地址(存放备份文章或重要文件, 最好是空白仓库. 默认使用main分支):')
+	editor=input('\n请输入要使用的编辑器或完整启动路径(nano, vim...):')
+	auto_upload_posts=True if input('\n是/否(y/n)在每次上传(到Github Pages)后自动上传文章以备份:')=='y' else False
+	setting_data={'backup_repo':backup_repo,'auto_upload_posts':auto_upload_posts,'pack_name':user_name+'的网站数据.tar.gz','editor':editor+' '}
+	new_print('\n配置完成. 欢迎%s!'%user_name,'success')
+	with open(setting_data_file,'w')as file:
+		file.write(dumps(setting_data,ensure_ascii=False))
+
+##启动检测与读取, 同时随机输出一句小提示.
+def check():
+	system('clear')
+	(setting() if input('\n没有检测到配置文件, 现在是/否(y/n)进行配置:')=='y' else exit()) if not path.exists(setting_data_file) else new_print('正在读取配置...','info')
+	system('rm -rf .temp') if path.exists('.temp') else (system('mkdir drafts') if not path.exists('drafts') else new_print('配置读取完成!','success'))
+	new_print('%s\n'%choice(tip_list),'info')
+	return get_from_json(setting_data_file)
+
+##初始化草稿(draft), 类似hexo的hexo new xxx指令.
+def init_draft(post_name):
+	time_now=strftime("%Y-%m-%d %H:%M:%S",localtime())
+	with open('drafts/%s.md'%post_name,'r')as file:
+		new_file=file.read().replace("{{ title }}",post_name).replace("{{ date }}",time_now)
+	with open('drafts/%s.md'%post_name,'w')as file:
+		file.write(new_file)
+
+##创建类.
+class new():
+	item_list=['网站','文章','页面','草稿','草稿=>文章']
+	def website():
+		website_name=input('请输入网站文件夹名称:')
+		system('hexo init %s && cp %s %s && cd %s'%(website_name,path.basename(__file__),website_name,website_name))
+	def post(editor):
+		post_name=input('请输入新建文章名称(建议为英文):')
+		system('hexo new %s'%post_name)
+		system(editor+'source/_posts/%s.md'%post_name) if input('是/否(y/n)现在编辑:')=='y' else new_print('编辑指令: %ssource/_posts/%s.md'%(editor,post_name),'info')
+	def page(editor):
+		page_name=input('请输入新建页面名称(建议为英文):')
+		system('hexo new page %s'%page_name)
+		system(editor+'source/%s/index.md'%page_name) if input('是/否(y/n)现在编辑:')=='y' else new_print('编辑指令: %ssource/%s/index.md'%(editor,page_name),'info')
+	def draft(editor):
+		draft_name=input('请输入新建草稿名称(建议为英文):')
+		system('cp scaffolds/post.md drafts/%s.md'%draft_name)
+		init_draft(draft_name)
+		system(editor+'drafts/%s.md'%draft_name) if input('是/否(y/n)现在编辑:')=='y' else new_print('编辑指令: %sdrafts/%s.md'%(editor,draft_name),'info')
+	def draft_to_post():
+		draft=listdir('drafts')
+		draft.sort()
+		list_print(draft)
+		system('mv drafts/%s source/_posts/'%draft[int(input('\n\n请输入要转为文章的草稿前的序号:'))])
+		new_print('完成!','success')
+
+##编辑类.
+class edit():
+	item_list=['网站配置','主题配置','文章模板','页面模板','文章','页面','草稿']
+	def website_config(editor):
+		system(editor+'_config.yml')
+	def theme_config(editor):
+		themes=[]
+		[themes.append(theme) for theme in listdir('themes') if theme[0]!='.']
+		themes.sort()
+		list_print(themes)
+		system(editor+'themes/%s/_config.yml'%themes[int(input('\n\n请输入要编辑的主题配置前的序号:'))])
+	def post_scaffold(editor):
+		system(editor+'scaffolds/post.md')
+	def page_scaffold(editor):
+		system(editor+'scaffolds/page.md')
+	def post(editor):
+		post=[]
+		[post.append(one_post) for one_post in listdir('source/_posts') if one_post[-2:]=='md']
+		post.sort()
+		list_print(post)
+		system(editor+'source/_posts/%s'%post[int(input('\n\n请输入要编辑的文章前的序号:'))])
+	def page(editor):
+		page=listdir('source')
+		page.remove('_posts')
+		page.sort()
+		list_print(page)
+		system(editor+'source/%s/index.md'%page[int(input('\n\n请输入要编辑的页面前的序号:'))])
+	def draft(editor):
+		draft=listdir('drafts')
+		draft.sort()
+		list_print(draft)
+		system(editor+'drafts/%s'%draft[int(input('\n\n请输入要编辑的文章前的序号:'))])
+
+##删除类.
+class delete():
+	item_list=['文章','页面','草稿','主题']
+	def post():
+		post=[]
+		[post.append(one_post) for one_post in listdir('source/_posts') if one_post[-2:]=='md']
+		post.sort()
+		list_print(post)
+		[system('rm source/_posts/%s'%post[int(one_post)]) for one_post in input('\n\n请输入要删除的文章前的序号(多个序号可用空格隔开):').split(' ')]
+	def page():
+		page=listdir('source')
+		page.remove('_posts')
+		page.sort()
+		list_print(page)
+		[system('rm -rf source/%s'%page[int(one_page)]) for one_page in input('\n\n请输入要删除的页面前的序号(多个序号可用空格隔开):').split(' ')]
+	def draft():
+		draft=listdir('drafts')
+		draft.sort()
+		list_print(draft)
+		[system('rm drafts/%s'%draft[int(one_draft)]) for one_draft in input('\n\n请输入要删除的草稿前的序号(多个序号可用空格隔开):').split(' ')]
+	def theme():
+		themes=[]
+		[themes.append(theme) for theme in listdir('themes') if theme[0]!='.']
+		themes.sort()
+		list_print(themes)
+		[system('rm -rf themes/%s && rm *%s*.yml'%(themes[int(one_theme)],themes[int(one_theme)])) for one_theme in input('\n\n请输入要删除的主题前的序号(多个序号可用空格隔开):').split(' ')]
+
+##预览类.
+class preview():
+	item_list=['本地预览','局域网预览(需安装http-server)']
+	def local():
+		system('hexo s')
+	def lan():
+		system('hexo clean && hexo g')
+		chdir('public')
+		system('http-server')
+
+##数据类.
+class hexo_data():
+	item_list=['详细数据','数字数据']
+	def ordinary():
+		system('hexo list post && hexo list page')
+	def simplify():
+		post=[]
+		[post.append(one_post) for one_post in listdir('source/_posts') if one_post[-2:]=='md']
+		page=listdir('source')
+		page.remove('_posts')
+		themes=[]
+		[themes.append(theme) for theme in listdir('themes') if theme[0]!='.']
+		draft=listdir('drafts')
+		new_print('当前共有文章%s篇, 草稿%s篇, 页面%s个, 下载了%s个主题.'%(len(post),len(draft),len(page),len(themes)),'info')
+
+##上传页面到Github Pages函数.
+def upload_page(auto_upload_posts,backup_repo):
+	if auto_upload_posts:
+		new_print('由于开启了自动备份, 正在上传文章备份...','info')
+		backup.post(backup_repo)
 	else:
 		pass
+	system('hexo g -d')
 
-def desktop():
-	check(platform.system())
-	print('已经完成所有配置啦!\n')
-	print('感谢使用Quick Hexo辅助脚本!\n\n功能列表如下:\n')
-	ll=['0. 更新		1. 安装所需一切','2. 新建		3. 编辑','4. 预览		5. 上传到GitHub','6. 备份文章	7. 主题','8. 导入文章	9. 列出内容','10. 清理缓存	11. 打包重要文件','re. 重新配置	q. 退出','s. 设置']
-	ls(ll,31,'#')
+##备份类.
+class backup():
+	item_list=['备份文章','备份所有重要数据']
+	def post(backup_repo):
+		system('git clone %s .backup_repo --depth 1 && rm .backup_repo/*.md && cp source/_posts/*.md .backup_repo'%backup_repo) if not path.exists('.backup_repo') else system('rm .backup_repo/*.md && cp source/_posts/*.md .backup_repo')
+		system('cp -r drafts .backup_repo')
+		chdir('.backup_repo')
+		system("git add * . && git commit -m '%s备份' && git push -u origin main"%strftime("%Y-%m-%d %H:%M:%S",localtime()))
+		new_print('文章备份完成!','success')
+	def all_data(pack_name,backup_repo):
+		(system('rm %s'%pack_name) if input('检测到曾经的备份文件, 是/否(y/n)删除:')=='y' else exit()) if path.exists(pack_name) else system('mkdir .temp')
+		[system('cp -r %s .temp'%fold) for fold in ['source','scaffolds','drafts','themes']]
+		[system('cp %s .temp'%file) for file in ['package.json','setting_data.json','_config*.yml']]
+		with open('.temp/recovery.sh','a')as sh:
+			[sh.write('rm -rf ../%s\n'%rm_fold) for rm_fold in ['source','scaffolds','drafts','themes']]
+			[sh.write('rm ../%s\n'%rm_file) for rm_file in ['package.json','setting_data.json','_config*.yml']]
+			sh.write('mv * .. && cd .. && npm install && rm -rf %s && rm %s && rm recovery.sh'%(pack_name[:-7],pack_name))
+		chdir('.temp')
+		system('chmod +x recovery.sh && tar czvf %s . && mv %s ..'%(pack_name,pack_name))
+		new_print('备份完成! 已将网站所有重要文件打包至%s, 可在解压后使用sh recovery.sh一键恢复网站(在已有的网站内运行会清除原网站的所有数据, 建议在新网站运行).'%pack_name,'success')
 
-def backup(data):
-	commit=data['commit']
-	repo=data['repo']
-	if os.path.exists('source/_posts/.git'):
-		action="git add * . && git commit -m '"+commit+"' && git push -u origin main"
-		os.chdir("source/_posts")
-		os.system(action)
-	else:
-		os.chdir("source")
-		os.system('git clone '+repo+' temp_posts')
-		action='mv _posts/*.md temp_posts && rm -rf _posts && mv temp_posts _posts'
-		os.system(action)
-		backup(data)
-	print('\n文章备份完成!')
+##主题类.
+class themes():
+	item_list=['推荐主题','自定义主题']
+	def recommend():
+		global theme_address
+		global clone_address
+		theme_list=list(loads(get(theme_address)).items())
+		theme_list.sort()
+		list_print([theme_name[0] for theme_name in theme_list])
+		theme_id=input('\n\n请输入要下载的主题前的序号:')
+		system('git clone %s%s themes/%s --depth 1'%(clone_address,theme_list[int(theme_id)][1],theme_list[int(theme_id)][0]))
+	def diy_theme():
+		system('git clone %s%s themes/%s --depth 1'%(clone_address,input('请输入主题仓库链接:'),input('\n请输入主题名(在themes文件夹中的名称):')))
 
-def packup(data):
-	pack_name=data['pack_name']
-	auto_pack_up=data['auto_pack_up']
-	print('该功能将对以下文件进行打包:\n')
-	ll=['根目录的配置文件','特定主题的配置文件','所有文章','所有模板文件','特定主题的资产(本地图片等)','脚本配置文件','出于大小考虑,不会对文章仓库的git进行备份']
-	show_ls(ll)
-	print('目前已有的主题:\n')
-	dic=get_ls('themes')
-	show_ls(list(dic.values()))
-	name=input('请输入需要备份的主题序号:')
-	theme=dic[name]
-	os.system('mkdir temp_dir && cp data.json hexo.py firstrun _config.yml temp_dir && mv temp_dir/_config.yml temp_dir/网站的配置文件_config.yml')
-	os.system('cp themes/'+theme+'/_config.yml temp_dir/'+theme+'的主题配置文件_config.yml')
-	if os.path.exists('_config.'+theme+'.yml'):
-		os.system('cp _config.'+theme+'.yml temp_dir/根目录存放的'+theme+'主题配置文件_config.'+theme+'.yml')
-	else:
-		pass
-	os.system('cp -r themes/'+theme+'/source temp_dir/'+theme+'主题的资产source')
-	os.system('cp -r source temp_dir/网站的页面及文章source && rm -rf temp_dir/网站的页面及文章source/_posts/.git && cp -r scaffolds temp_dir/网站的模板scaffolds')
-	os.chdir('temp_dir')
-	readme='首先感谢使用此脚本!不然你也不会得到这个压缩包,更不会得到里面的这个自述文件 -- 就是你现在正在阅读的这个!\n\n现在介绍一下该怎么处理这个压缩包吧!\n\n首先应该将文件或文件夹移动到应该存放的地方,这点参照文件前面的说明即可.例如:\n\n将 根目录存放的'+theme+'主题的配置文件 这个文件放在 网站的根目录,网站的配置文件 也放在网站的根目录即可.\n\n[规律: 网站或者根目录开头的放在网站根目录,'+theme+'主题开头的放在 theme/'+theme+' 文件夹!\n例外的情况,如data.json,firstrun,hexo.py文件也放在根目录即可!]\n\n第二步,将放在相应位置的这些文件或文件夹重命名,将名称前面的中文去掉即可!\n\nBye~~'
-	with open('README','w')as f:
-		f.write(readme)
-	os.system('tar -czvf '+pack_name+'.tar.gz *')
-	os.chdir('..')
-	if os.path.exists(pack_name+'.tar.gz'):
-		rm=input('\n检测到本地存在备份文件,是/否(y/n)覆盖:')
-		if rm=='y':
-			os.system('rm -rf '+pack_name+'.tar.gz')
-		else:
-			do('quit')
-	os.system('mv temp_dir/'+pack_name+'.tar.gz . && rm -rf temp_dir')
-	if auto_pack_up=='y':
-		os.system('cp '+pack_name+'.tar.gz source/_posts/')
-		backup(data)
-		os.system('rm -rf source/_posts/'+pack_name+'.tar.gz')
-		print('\n打包并上传完成,请查看'+pack_name+'.tar.gz中的README文件!')
-	else:
-		print('\n打包完成,请查看'+pack_name+'.tar.gz中的README文件!')
+##重新配置程序函数.
+def program_setting(editor):
+	system('rm %s'%setting_data_file)
+	setting()
 
-def update(what,data):
-	sudo=data['sudo']
-	proxy=data['proxy']
-	if what=='n':
-		if sudo=='y':
-			action="sudo npm update --location=global && sudo npm install --location=global n && sudo n stable"
-		else:
-			action="npm update --location=global && npm install --location=global n && n stable"
-		os.system(action)
-	if what=='s':
-		l='https://raw.githubusercontent.com/wzk0/quick-hexo/main/hexo.py'
-		if proxy=='y':
-			url='https://ghproxy.com/'+l
-		else:
-			url=l
-		r=requests.get(url)
-		with open('hexo.py', 'w') as f:
-			f.write(r.text)
-	print('\n更新完成!')
+##更新程序.
+def program_update():
+	new_print('正在获取更新...')
+	with open(path.basename(__file__),'w')as new_program:
+		new_program.write(get(update_program_address))
+	new_print('更新完成!','success')
 
-def download(data):
-	sudo=data['sudo']
-	pack_manager=data['pack_manager']
-	editor=data['editor']
-	if sudo=='y':
-		action="sudo "+pack_manager+" install git nodejs npm "+editor+" -y && sudo npm install http-server --location=global && sudo npm install hexo-cli --location=global && sudo npm install hexo-deployer-git --save"
-	else:
-		action=pack_managerg+" install git nodejs npm "+editor+" -y && npm install http-server --location=global npm install hexo-cli --location=global && npm install hexo-deployer-git --save"
-	os.system(action)
-	print('\n安装完成!')
+def program_exit():
+	new_print('Bye~ 这里有个提示: %s'%choice(tip_list),'info')
+	exit()
 
-def new(data):
-	editor=data['editor']
-	ll=['0. 网站','1. 文章','2. 页面']
-	ls(ll,6,'#')
-	choose=input('请输入序号:')
-	os.system('clear')
-	if choose=='0':
-		name=input('请输入网站(文件夹)名:')
-		action='hexo init '+name+' && cp hexo.py data.json firstrun '+name
-		os.system(action)
-		print('\n新建网站完成!若要在新网站'+name+'中进行操作,请在退出脚本后执行 cd '+name+' && python3 hexo,py')
-	if choose=='1':
-		name=input("请输入文章(链接地址)名:")
-		action='hexo new '+name
-		os.system(action)
-		choose=input('\n是/否(y/n)直接编辑:')
-		if choose=='y':
-			action=editor+' source/_posts/'+name+'.md'
-			os.system(action)
-		else:
-			print('\n稍后可输入 '+editor+' source/_posts/'+name+'.md 进行编辑!')
-	if choose=='2':
-		name=input('请输入网页(链接地址)名:')
-		action="hexo new page "+name
-		os.system(action)
-		choose=input('\n是/否(y/n)直接编辑:')
-		if choose=='y':
-			action=editor+' source/'+name+'/index.md'
-			os.system(action)
-		else:
-			print('\n稍后可输入 '+editor+' source/'+name+'/index.md 进行编辑!')
-
-def edit(data):
-	editor=data['editor']
-	auto_pack=data['auto_pack']
-	def edt(path):
-		os.system(editor+' '+path)
-	dic={'0':'_config.yml','2':'scaffolds/post.md','3':'scaffolds/page.md'}
-	ll=['0. 网站配置	1. 主题配置','2. 文章模板	3. 页面模板','4. 文章		5. 页面']
-	ls(ll,27,'#')
-	choose=input('请输入序号:')
-	os.system('clear')
-	if choose in dic.keys():
-		edt(dic[choose])
-		if auto_pack=='y':
-			print('\n检测到修改了配置或模板文件,开始进入自动打包流程.\n')
-			packup(data)
-		else:
-			pass
-	else:
-		if choose=='1':
-			ll=os.listdir('themes')
-			show_ls(ll)
-			dic=get_ls('themes')
-			choose=input('请输入主题前的序号:')
-			edt('themes/'+dic[choose]+'/_config.yml')
-		if choose=='4':
-			ll=os.listdir('source/_posts')
-			show_ls(ll)
-			dic=get_ls('source/_posts')
-			choose=input('请输入文章前的序号')
-			edt('source/_posts/'+dic[choose])
-		if choose=='5':
-			ll=os.listdir('source')
-			show_ls(ll)
-			dic=get_ls('source')
-			choose=input('请输入页面前的序号')
-			edt('source/'+dic[choose]+"/index.md")
-		else:
-			pass
-	print('\n编辑完成!')
-
-def preview(data):
-	ll=['本地静默启动','本地非静默启动(方便查看情况)','局域网静默启动(请清楚自己的IP)','局域网非静默启动','杀死进程']
-	show_ls(ll)
-	choose=input('请输入序号:')
-	os.system('clear')
-	def get_act(choose):
-		if choose=='0':
-			return 'nohup hexo s &'
-		if choose=='1':
-			return 'hexo s'
-		if choose=='2':
-			return 'nohup http-server &'
-		if choose=='3':
-			return 'http-server'
-		if choose=='4':
-			return 'fuser -k -n tcp 8080 && fuser -k -n tcp 4000'
-		else:
-			pass
-	if choose in '23':
-		os.system('hexo g')
-		os.chdir('public')
-		os.system(get_act(choose))
-	else:
-		os.system(get_act(choose))
-	print('\n完成!')
-
-def upload(data):
-	auto_post_up=data['auto_post_up']
-	os.system('hexo g -d')
-	time.sleep(2)
-	if auto_post_up=='y':
-		backup(data)
-	print('\n上传完成!')
-
-def theme(data):
-	proxy=data['proxy']
-	l='https://raw.githubusercontent.com/wzk0/quick-hexo/main/theme.dict'
-	if proxy=='y':
-		url='https://ghproxy.com/'+l
-	else:
-		url=l
-	d=requests.get(url)
-	dic=eval(d.text)
-	v=[]
-	for l in list(dic.values()):
-		ll=l.replace('/','的')
-		v.append(ll)
-	show_ls(v)
-	ids=input('请输入序号以安装主题:')
-	def gc(nm,ids):
-		if proxy=='y':
-			os.system('git clone https://ghproxy.com/https://github.com/'+list(dic.values())[int(ids)]+' themes/'+nm)
-		else:
-			os.system('git clone https://github.com/'+list(dic.values())[int(ids)]+' themes/'+nm)
-	nm=list(dic.keys())[int(ids)]
-	gc(nm,ids)
-	print('\n安装完成!')
-
-def putin(data):
-	better=data['better']
-	repo=data['repo']
-	git=data['git']
-	os.chdir('source')
-	os.system('git clone '+repo+' temp_repo')
-	if git=='y':
-		if better=='l':
-			action='mv _posts/*.md temp_repo && rm -rf _posts && mv temp_repo _posts'
-		if better=='c':
-			action='mv temp_repo/*.md _posts && mv _posts/*.md temp_repo && rm -rf _posts && mv temp_repo _posts'
-		os.system(action)
-	else:
-		if better=='l':
-			action='mv _posts/*.md temp_repo && mv temp_repo/*.md _posts && rm -rf temp_repo'
-		if better=='c':
-			action='mv temp_repo/*.md _posts && rm -rf temp_repo'
-		os.system(action)
-	print('\n导入完成!')
-
-def lst(data):
-	print('所有文章如下:\n')
-	os.system('hexo list post')
-	print('\n所有页面如下:\n')
-	os.system('hexo list page')
-	print('\n列出完成!')
-
-def clean(data):
-	do('clean')
-	print('\n清理完成!')
-
-def re():
-	sure=input('确认清除所有旧配置(y/n):')
-	if sure=='y':
-		os.system('rm -rf firstrun data.json')
-		print('\n旧配置清理完成!请重启脚本以重写配置.')
-	else:
-		print('\n操作取消!')
-
-def q():
-	print('ByeBye~~')
-	do('quit')
-
-def s(data):
-	editor=data['editor']
-	os.system(editor+' data.json')
-
+##main函数, 整个骨架.
 def main():
-	desktop()
-	with open('data.json','r')as f:
-		dt=f.read()
-	data=json.loads(dt)
-	choose=input('请输入序号:')
-	os.system('clear')
-	if choose=='0':
-		ll=['n. 更新nodejs及npm','s. 更新脚本']
-		ls(ll,18,'#')
-		what=input('请输入序号:')
-		update(what,data)
-	if choose=='1':
-		download(data)
-	if choose=='2':
-		new(data)
-	if choose=='3':
-		edit(data)
-	if choose=='4':
-		preview(data)
-	if choose=='5':
-		upload(data)
-	if choose=='6':
-		backup(data)
-	if choose=='7':
-		theme(data)
-	if choose=='8':
-		putin(data)
-	if choose=='9':
-		lst(data)
-	if choose=='10':
-		clean(data)
-	if choose=='11':
-		packup(data)
-	if choose=='re':
-		re()
-	if choose=='q':
-		q()
-	if choose=='s':
-		s(data)
-
+	user_setting=check()
+	list_print(['新建','编辑','删除','预览','数据','上传到Page','备份','主题','重新配置程序','更新程序','退出'])
+	action=input('\n\n请输入序号以进行操作:')
+	system('clear')
+	if action=='0':
+		list_print(new.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		new.website() if new_action=='0' else (new.post(user_setting['editor']) if new_action=='1' else (new.page(user_setting['editor']) if new_action=='2' else (new.draft(user_setting['editor']) if new_action=='3' else (new.draft_to_post() if new_action=='4' else exit()))))
+	if action=='1':
+		list_print(edit.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		edit.website_config(user_setting['editor']) if new_action=='0' else (edit.theme_config(user_setting['editor']) if new_action=='1' else (edit.post_scaffold(user_setting['editor']) if new_action=='2' else (edit.page_scaffold(user_setting['editor']) if new_action=='3' else (edit.post(user_setting['editor']) if new_action=='4' else (edit.page(user_setting['editor']) if new_action=='5' else (edit.draft(user_setting['editor']) if new_action=='6' else exit()))))))
+	if action=='2':
+		list_print(delete.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		delete.post() if new_action=='0' else (delete.page() if new_action=='1' else (delete.draft() if new_action=='2' else (delete.theme() if new_action=='3' else exit())))
+	if action=='3':
+		list_print(preview.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		preview.local() if new_action=='0' else (preview.lan() if new_action=='1' else exit())
+	if action=='4':
+		list_print(hexo_data.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		hexo_data.ordinary() if new_action=='0' else (hexo_data.simplify() if new_action=='1' else exit())
+	if action=='5':
+		upload_page(user_setting['auto_upload_posts'],user_setting['backup_repo'])
+	if action=='6':
+		list_print(backup.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		backup.post(user_setting['backup_repo']) if new_action=='0' else (backup.all_data(user_setting['pack_name'],user_setting['backup_repo']) if new_action=='1' else exit())
+	if action=='7':
+		list_print(themes.item_list)
+		new_action=input('\n\n请输入序号以进行操作:')
+		system('clear')
+		themes.recommend() if new_action=='0' else (themes.diy_theme() if new_action=='1' else exit())
+	if action=='8':
+		program_setting(user_setting['editor'])
+	if action=='9':
+		program_update()
+	if action=='10':
+		program_exit()
 main()
