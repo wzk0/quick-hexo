@@ -207,7 +207,7 @@ class themes():
 	def recommend():
 		global theme_address
 		global clone_address
-		theme_list=list(loads(get(theme_address)).items())
+		theme_list=list(loads(get(theme_address).text).items())
 		theme_list.sort()
 		list_print([theme_name[0] for theme_name in theme_list])
 		theme_id=input('\n\n请输入要下载的主题前的序号:')
